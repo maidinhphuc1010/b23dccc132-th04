@@ -54,10 +54,22 @@ const DiplomaBookPage: React.FC = () => {
   const handleCreate = async () => {
     const currentYear = new Date().getFullYear();
     try {
-      await createDiplomaBook(currentYear);
-      message.success('Tạo sổ văn bằng thành công');
-    } catch (error) {
-      message.error('Có lỗi xảy ra khi tạo sổ văn bằng');
+      // Kiểm tra xem đã có sổ văn bằng cho năm hiện tại chưa
+      const existingBook = diplomaBooks.find(book => book.year === currentYear);
+      if (existingBook) {
+        message.warning(`Đã tồn tại sổ văn bằng cho năm ${currentYear}`);
+        return;
+      }
+
+      const result = await createDiplomaBook(currentYear);
+      if (result) {
+        message.success('Tạo sổ văn bằng thành công');
+      } else {
+        message.error('Không thể tạo sổ văn bằng');
+      }
+    } catch (error: any) {
+      console.error('Error creating diploma book:', error);
+      message.error(error.message || 'Có lỗi xảy ra khi tạo sổ văn bằng');
     }
   };
 
