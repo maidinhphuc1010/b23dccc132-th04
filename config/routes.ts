@@ -24,33 +24,56 @@
 		component: './TrangChu',
 		icon: 'HomeOutlined',
 	},
+
+	// QUẢN LÝ VĂN BẰNG
+	{
+		path: '/diploma',
+		name: 'Quản lý văn bằng',
+		icon: 'FileTextOutlined',
+		access: 'canAdmin',
+		routes: [
+			{
+				path: '/diploma/book',
+				name: 'Sổ văn bằng',
+				component: './diploma/book',
+				icon: 'BookOutlined',
+			},
+			{
+				path: '/diploma/decision',
+				name: 'Quyết định tốt nghiệp',
+				component: './diploma/decision',
+				icon: 'FileDoneOutlined',
+			},
+			{
+				path: '/diploma/form',
+				name: 'Cấu hình biểu mẫu',
+				component: './diploma/form',
+				icon: 'FormOutlined',
+			},
+			{
+				path: '/diploma/info',
+				name: 'Thông tin văn bằng',
+				component: './diploma/info',
+				icon: 'ProfileOutlined',
+			},
+		],
+	},
+
+	// TRA CỨU VĂN BẰNG
+	{
+		path: '/diploma/search',
+		name: 'Tra cứu văn bằng',
+		component: './diploma/search',
+		icon: 'SearchOutlined',
+	},
+
+	// CÁC TRANG KHÁC
 	{
 		path: '/gioi-thieu',
 		name: 'About',
 		component: './TienIch/GioiThieu',
 		hideInMenu: true,
 	},
-	{
-		path: '/random-user',
-		name: 'RandomUser',
-		component: './RandomUser',
-		icon: 'ArrowsAltOutlined',
-	},
-
-	// DANH MUC HE THONG
-	// {
-	// 	name: 'DanhMuc',
-	// 	path: '/danh-muc',
-	// 	icon: 'copy',
-	// 	routes: [
-	// 		{
-	// 			name: 'ChucVu',
-	// 			path: 'chuc-vu',
-	// 			component: './DanhMuc/ChucVu',
-	// 		},
-	// 	],
-	// },
-
 	{
 		path: '/notification',
 		routes: [
