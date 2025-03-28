@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from "react";
 import {
   getDiplomaBooks,
   createDiplomaBook as createDiplomaBookService,
@@ -11,10 +11,11 @@ import {
   getDiplomaInfos,
   createDiplomaInfo as createDiplomaInfoService,
   searchDiplomaInfo as searchDiplomaInfoService,
-} from '@/services/diploma';
+  deleteDiplomaInfo as deleteDiplomaInfoService, // Thêm API xóa văn bằng
+} from "@/services/diploma";
 
-// Types
-export type DataType = 'String' | 'Number' | 'Date';
+// 📝 Định nghĩa kiểu dữ liệu
+export type DataType = "String" | "Number" | "Date";
 
 export interface DiplomaFormField {
   id: string;
@@ -44,11 +45,12 @@ export interface GraduationDecision {
 
 export interface DiplomaInfo {
   id: string;
-  bookNumber: number;
-  diplomaNumber: string;
   studentId: string;
   fullName: string;
-  dateOfBirth: string;
+  ethnicity: string;
+  placeOfBirth: string;
+  admissionDate: string;
+  averageRank: number;
   graduationDecisionId: string;
   customFields: Record<string, any>;
   createdAt: string;
@@ -61,14 +63,14 @@ interface ApiResponse<T> {
   message?: string;
 }
 
-// Model
+// 📌 Hook quản lý dữ liệu văn bằng
 export default function useDiplomaModel() {
   const [diplomaBooks, setDiplomaBooks] = useState<DiplomaBook[]>([]);
   const [graduationDecisions, setGraduationDecisions] = useState<GraduationDecision[]>([]);
   const [diplomaFormFields, setDiplomaFormFields] = useState<DiplomaFormField[]>([]);
   const [diplomaInfos, setDiplomaInfos] = useState<DiplomaInfo[]>([]);
 
-  // Load initial data
+  // 🛠 Load dữ liệu ban đầu
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -82,127 +84,84 @@ export default function useDiplomaModel() {
         setGraduationDecisions(decisionsRes.data);
         setDiplomaFormFields(fieldsRes.data);
         setDiplomaInfos(infosRes.data);
-      } catch (error) {
-        console.error('Error loading data:', error);
+      } catch {
+        console.error("⚠️ Lỗi khi tải dữ liệu");
       }
     };
     loadData();
   }, []);
 
-  // Diploma Book operations
-  const createDiplomaBook = useCallback(async (year: number): Promise<DiplomaBook> => {
-    try {
-      const response: ApiResponse<DiplomaBook> = await createDiplomaBookService(year);
-      if (response.data) {
-        setDiplomaBooks(prev => [...prev, response.data]);
-        return response.data;
-      }
-      throw new Error(response.message || 'Failed to create diploma book');
-    } catch (error) {
-      console.error('Error creating diploma book:', error);
-      throw error;
-    }
-  }, []);
-
-  const getDiplomaBook = useCallback(async (id: string): Promise<DiplomaBook> => {
-    try {
-      const book = diplomaBooks.find(b => b.id === id);
-      if (!book) {
-        throw new Error('Diploma book not found');
-      }
-      return book;
-    } catch (error) {
-      console.error('Error getting diploma book:', error);
-      throw error;
-    }
-  }, [diplomaBooks]);
-
-  // Graduation Decision operations
-  const createGraduationDecision = useCallback(async (decision: Omit<GraduationDecision, 'id' | 'createdAt' | 'updatedAt'>): Promise<GraduationDecision> => {
-    try {
-      const response: ApiResponse<GraduationDecision> = await createGraduationDecisionService(decision);
-      if (response.data) {
-        setGraduationDecisions(prev => [...prev, response.data]);
-        return response.data;
-      }
-      throw new Error(response.message || 'Failed to create graduation decision');
-    } catch (error) {
-      console.error('Error creating graduation decision:', error);
-      throw error;
-    }
-  }, []);
-
-  // Diploma Form Field operations
-  const createDiplomaFormField = useCallback(async (field: Omit<DiplomaFormField, 'id'>): Promise<DiplomaFormField> => {
-    try {
-      const response: ApiResponse<DiplomaFormField> = await createDiplomaFormFieldService(field);
-      if (response.data) {
-        setDiplomaFormFields(prev => [...prev, response.data]);
-        return response.data;
-      }
-      throw new Error(response.message || 'Failed to create diploma form field');
-    } catch (error) {
-      console.error('Error creating diploma form field:', error);
-      throw error;
-    }
-  }, []);
-
-  const updateDiplomaFormField = useCallback(async (id: string, field: Partial<DiplomaFormField>): Promise<DiplomaFormField> => {
-    try {
-      const response: ApiResponse<DiplomaFormField> = await updateDiplomaFormFieldService(id, field);
-      if (response.data) {
-        setDiplomaFormFields(prev => prev.map(f => f.id === id ? response.data : f));
-        return response.data;
-      }
-      throw new Error(response.message || 'Failed to update diploma form field');
-    } catch (error) {
-      console.error('Error updating diploma form field:', error);
-      throw error;
-    }
-  }, []);
-
-  const deleteDiplomaFormField = useCallback(async (id: string): Promise<void> => {
-    try {
-      const response: ApiResponse<void> = await deleteDiplomaFormFieldService(id);
-      if (response.status === 200) {
-        setDiplomaFormFields(prev => prev.filter(f => f.id !== id));
-      } else {
-        throw new Error(response.message || 'Failed to delete diploma form field');
-      }
-    } catch (error) {
-      console.error('Error deleting diploma form field:', error);
-      throw error;
-    }
-  }, []);
-
-  // Diploma Info operations
-  const createDiplomaInfo = useCallback(async (info: Omit<DiplomaInfo, 'id' | 'createdAt' | 'updatedAt'>): Promise<DiplomaInfo> => {
-    try {
-      const response: ApiResponse<DiplomaInfo> = await createDiplomaInfoService(info);
-      if (response.data) {
-        setDiplomaInfos(prev => [...prev, response.data]);
-        return response.data;
-      }
-      throw new Error(response.message || 'Failed to create diploma info');
-    } catch (error) {
-      console.error('Error creating diploma info:', error);
-      throw error;
-    }
-  }, []);
-
-  const searchDiplomaInfo = useCallback(async (params: {
-    diplomaNumber?: string;
-    bookNumber?: number;
-    studentId?: string;
-    fullName?: string;
-    dateOfBirth?: string;
-  }): Promise<DiplomaInfo[]> => {
-    try {
-      const response: ApiResponse<DiplomaInfo[]> = await searchDiplomaInfoService(params);
+  // 📌 Thêm sổ văn bằng
+  const createDiplomaBook = useCallback(async (year: number) => {
+    const response: ApiResponse<DiplomaBook> = await createDiplomaBookService(year);
+    if (response.data) {
+      setDiplomaBooks((prev) => [...prev, response.data]);
       return response.data;
-    } catch (error) {
-      console.error('Error searching diploma info:', error);
-      throw error;
+    }
+    throw new Error(response.message || "Không thể tạo sổ văn bằng");
+  }, []);
+
+  // 📌 Thêm quyết định tốt nghiệp
+  const createGraduationDecision = useCallback(async (decision: Omit<GraduationDecision, "id" | "createdAt" | "updatedAt">) => {
+    const response: ApiResponse<GraduationDecision> = await createGraduationDecisionService(decision);
+    if (response.data) {
+      setGraduationDecisions((prev) => [...prev, response.data]);
+      return response.data;
+    }
+    throw new Error(response.message || "Không thể tạo quyết định tốt nghiệp");
+  }, []);
+
+  // 📌 Thêm trường thông tin văn bằng
+  const createDiplomaFormField = useCallback(async (field: Omit<DiplomaFormField, "id">) => {
+    const response: ApiResponse<DiplomaFormField> = await createDiplomaFormFieldService(field);
+    if (response.data) {
+      setDiplomaFormFields((prev) => [...prev, response.data]);
+      return response.data;
+    }
+    throw new Error(response.message || "Không thể tạo trường thông tin");
+  }, []);
+
+  // 📌 Cập nhật trường thông tin
+  const updateDiplomaFormField = useCallback(async (field: DiplomaFormField) => {
+    const response: ApiResponse<DiplomaFormField> = await updateDiplomaFormFieldService(field);
+    if (response.data) {
+      setDiplomaFormFields((prev) =>
+        prev.map((item) => (item.id === field.id ? response.data : item))
+      );
+      return response.data;
+    }
+    throw new Error(response.message || "Không thể cập nhật trường thông tin");
+  }, []);
+
+  // 📌 Xóa trường thông tin
+  const deleteDiplomaFormField = useCallback(async (id: string) => {
+    await deleteDiplomaFormFieldService(id);
+    setDiplomaFormFields((prev) => prev.filter((item) => item.id !== id));
+  }, []);
+
+  // 📌 Thêm văn bằng
+  const createDiplomaInfo = useCallback(async (data: Omit<DiplomaInfo, "id" | "createdAt" | "updatedAt">) => {
+    const response: ApiResponse<DiplomaInfo> = await createDiplomaInfoService(data);
+    if (response.data) {
+      setDiplomaInfos((prev) => [...prev, response.data]);
+      return response.data;
+    }
+    throw new Error(response.message || "Không thể tạo văn bằng");
+  }, []);
+
+  // 📌 Tìm kiếm văn bằng
+  const searchDiplomaInfo = useCallback(async (query: Partial<DiplomaInfo>) => {
+    const response: ApiResponse<DiplomaInfo[]> = await searchDiplomaInfoService(query);
+    setDiplomaInfos(response.data);
+  }, []);
+
+  // 📌 Xóa văn bằng
+  const removeDiploma = useCallback(async (id: string) => {
+    try {
+      await deleteDiplomaInfoService(id);
+      setDiplomaInfos((prev) => prev.filter((item) => item.id !== id));
+    } catch {
+      console.error("⚠️ Lỗi khi xóa văn bằng");
     }
   }, []);
 
@@ -212,12 +171,12 @@ export default function useDiplomaModel() {
     diplomaFormFields,
     diplomaInfos,
     createDiplomaBook,
-    getDiplomaBook,
     createGraduationDecision,
     createDiplomaFormField,
     updateDiplomaFormField,
     deleteDiplomaFormField,
     createDiplomaInfo,
     searchDiplomaInfo,
+    removeDiploma,
   };
-} 
+}

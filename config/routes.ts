@@ -40,20 +40,18 @@
 			},
 			{
 				path: '/diploma/decision',
-				name: 'Quyết định tốt nghiệp',
-				component: './diploma/decision',
-				icon: 'FileDoneOutlined',
+				component: './diploma/decision/GraduationDecisionPage',
 			},
 			{
 				path: '/diploma/form',
 				name: 'Cấu hình biểu mẫu',
-				component: './diploma/form',
+				component: './diploma/form/DiplomaFormPage',
 				icon: 'FormOutlined',
 			},
 			{
 				path: '/diploma/info',
 				name: 'Thông tin văn bằng',
-				component: './diploma/info',
+				component: './diploma/info/DiplomaInfoPage',
 				icon: 'ProfileOutlined',
 			},
 		],
