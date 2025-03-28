@@ -50,9 +50,7 @@
 			},
 			{
 				path: '/diploma/info',
-				name: 'Thông tin văn bằng',
 				component: './diploma/info/DiplomaInfoPage',
-				icon: 'ProfileOutlined',
 			},
 		],
 	},
@@ -61,7 +59,7 @@
 	{
 		path: '/diploma/search',
 		name: 'Tra cứu văn bằng',
-		component: './diploma/search',
+		component: './diploma/search/UniversalSearchPage',
 		icon: 'SearchOutlined',
 	},
 
